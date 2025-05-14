@@ -1,0 +1,25 @@
+paths:
+  save_model: "./model/captcha_model.pth"
+  load_model: "./model/captcha_model_9984.pth"
+  train_data: "./data/raw"
+  eval_data: "./data/eval"
+  pred_data: "./data/pred"
+  test_image: "./data/test/test.png"
+
+image:
+  width: 160
+  height: 60
+
+characters:
+  length: 5
+  #  set: '0123456789abcdefghijklmnopqrstuvwxyz'
+  set: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+training:
+  epochs: 30
+  batch_size: 128
+  learning_rate: 0.001
+  dataset_size: 200
+
+evaluation:
+  acc_threshold: 75

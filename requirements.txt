@@ -1,0 +1,8 @@
+click~=8.2.0
+numpy~=2.2.5
+torch~=2.7.0
+tqdm~=4.67.1
+PyYAML~=6.0.2
+pillow~=11.2.1
+torchvision~=0.22.0
+captcha~=0.7.1
