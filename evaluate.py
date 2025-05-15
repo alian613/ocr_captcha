@@ -79,6 +79,7 @@ def main(args=None):
     eval_data_path = getattr(args, 'eval_data_path', EVAL_DATA_PATH)
 
     cache_mode = getattr(args, 'cache', True)
+    load_only = getattr(args, 'load_only', False)
     dataset_size = getattr(args, 'dataset_size', DATESET_SIZE)
     batch_size = getattr(args, 'batch_size', BATCH_SIZE)
     character_set = getattr(args, 'character_set', CHARACTER_SET)
@@ -110,7 +111,7 @@ def main(args=None):
     model = load_model(CNNWithOneHot(image_width, image_height, character_length, len(character_set)), load_model_path, device)
 
     # Load evaluation dataset in memory
-    dataset = CaptchaDataset(size=dataset_size, cache=cache_mode, train_data_path=train_data_path, config=captcha_config)
+    dataset = CaptchaDataset(size=dataset_size, cache=cache_mode, load_only=load_only, train_data_path=train_data_path, config=captcha_config)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     # Run model evaluation

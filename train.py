@@ -23,6 +23,7 @@ def training(args=None):
     learning_rate = getattr(args, 'learning_rate', LEARNING_RATE)
     batch_size = getattr(args, 'batch_size', BATCH_SIZE)
     cache_mode = getattr(args, 'cache', True)
+    load_only = getattr(args, 'load_only', False)
 
     character_set = getattr(args, 'character_set', CHARACTER_SET)
     character_length = getattr(args, 'character_length', CHARACTER_LENGTH)
@@ -67,7 +68,7 @@ def training(args=None):
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     # Load training dataset
-    dataset = CaptchaDataset(size=dataset_size, cache=cache_mode, train_data_path=train_data_path, config=captcha_config)
+    dataset = CaptchaDataset(size=dataset_size, cache=cache_mode, load_only=load_only, train_data_path=train_data_path, config=captcha_config)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, pin_memory=torch.cuda.is_available())
 
     max_eval_acc = -1

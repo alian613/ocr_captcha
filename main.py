@@ -26,6 +26,7 @@ def cli():
          "Options allow controlling training behavior such as cache usage, number of epochs, batch size, learning rate, etc."
 )
 @click.option('--cache/--no-cache', default=True, help="Cache dataset in memory (default: enabled). If --no-cache is used, the dataset will be stored on disk instead of in memory.")
+@click.option('--load-only', is_flag=True, default=False, help="Only load existing dataset from disk without generating new samples")
 @click.option('--epochs', default=EPOCHS, show_default=True, type=int, help="Number of training epochs")
 @click.option('--batch-size', default=BATCH_SIZE, show_default=True, type=int, help="Batch size for training")
 @click.option('--learning-rate', default=LEARNING_RATE, show_default=True, type=float, help="Learning rate for model optimization")
@@ -40,7 +41,7 @@ def cli():
 @click.option('--eval-save-image', is_flag=False, help="Save evaluation result images after training (default: False)")
 @click.option('--eval-acc-threshold', default=EVAL_ACC_THRESHOLD, show_default=True, type=int, help="Accuracy threshold for saving the best model")
 def train(
-        cache, epochs, batch_size, learning_rate, dataset_size,
+        cache, load_only, epochs, batch_size, learning_rate, dataset_size,
         save_model_path, character_set, character_length,
         image_width, image_height, train_data_path, eval_data_path,
         eval_save_image, eval_acc_threshold
@@ -48,6 +49,7 @@ def train(
     """🚀 Train the model"""
     args = SimpleNamespace(
         cache=cache,
+        load_only=load_only,
         epochs=epochs,
         batch_size=batch_size,
         learning_rate=learning_rate,
@@ -101,6 +103,7 @@ def predict(path, model_path, character_set, character_length, image_width, imag
          "Options allow adjusting batch size, image dimensions, and accuracy threshold, etc."
 )
 @click.option('--cache/--no-cache', default=True, help="Cache dataset in memory (default: enabled). If --no-cache is used, the dataset will be stored on disk instead of in memory.")
+@click.option('--load-only', is_flag=True, default=False, help="Only load existing dataset from disk without generating new samples")
 @click.option('--dataset-size', default=DATESET_SIZE, show_default=True, type=int, help="Number of samples for evaluation")
 @click.option('--batch-size', default=BATCH_SIZE, show_default=True, type=int, help="Batch size for evaluation")
 @click.option('--character-set', default=CHARACTER_SET, show_default=True, type=str, help="Character set for CAPTCHA")
@@ -113,13 +116,14 @@ def predict(path, model_path, character_set, character_length, image_width, imag
 @click.option('--train-data-path', default=TRAIN_DATA_PATH, show_default=True, type=click.Path(), help="Path to the training data")
 @click.option('--eval-data-path', default=EVAL_DATA_PATH, show_default=True, type=click.Path(), help="Path to the evaluation data")
 def evaluate(
-        cache, dataset_size, batch_size, character_set, character_length,
+        cache, load_only, dataset_size, batch_size, character_set, character_length,
         image_width, image_height, save_image, eval_acc_threshold,
         model_path, train_data_path, eval_data_path
 ):
     """📊 Evaluate the model"""
     args = SimpleNamespace(
         cache=cache,
+        load_only=load_only,
         dataset_size=dataset_size,
         batch_size=batch_size,
         character_set=character_set,
