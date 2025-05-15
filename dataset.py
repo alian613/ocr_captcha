@@ -39,15 +39,10 @@ class CaptchaDataset(Dataset):
         self.character_length = config.character_length
         self.image_width = config.image_width
         self.image_height = config.image_height
-        self.train_data_path = train_data_path
+        self.train_data_path = Path(train_data_path)
 
         self.data = []
         self.labels = []
-
-        generator = CaptchaGenerator(character_set=self.character_set, character_length=self.character_length,
-                                     width=self.image_width, height=self.image_height)
-
-        print("Starting dataset generation...")
 
         if load_only:
             print(f"Loading existing CAPTCHA images from folder {self.train_data_path}...")
@@ -55,6 +50,10 @@ class CaptchaDataset(Dataset):
             self.size = len(self.image_files)
             return  # skip generation
         else:
+            generator = CaptchaGenerator(character_set=self.character_set, character_length=self.character_length,
+                                         width=self.image_width, height=self.image_height)
+
+            print("Starting dataset generation...")
             if cache:
                 print(f"Generating {size} samples in memory...")
                 for _ in tqdm(range(size), desc="🧠 Generating (cache mode)"):
@@ -87,7 +86,7 @@ class CaptchaDataset(Dataset):
         # image transform
         compose = transform(image_height=self.image_height, image_width=self.image_width)
 
-        if self.cache:
+        if self.cache and not hasattr(self, "image_files"):
             img = compose(self.data[idx])
             label = encode(self.labels[idx], self.character_set, self.character_length)
         else:
@@ -99,9 +98,5 @@ class CaptchaDataset(Dataset):
             label_text = img_path.stem  # stem Extract filename without extension
             print()
             print(f"🖼️ Loaded image: {img_path.name} / Label: '{label_text}'")
-            try:
-                label = encode(label_text, self.character_set, self.character_length)
-            except Exception as e:
-                print(f"❌ Failed to encode label: '{label_text}'")
             label = encode(label_text, self.character_set, self.character_length)
         return img, label
