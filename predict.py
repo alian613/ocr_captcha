@@ -9,8 +9,8 @@ from model import load_model, CNNWithOneHot
 from PIL import Image
 
 
-def predict_image(image_path, model, device, character_set, character_length):
-    image = Image.open(image_path).convert("L")  # Convert to grayscale
+def _predict_from_image(image: Image.Image, model, device, character_set, character_length) -> str:
+    image = image.convert("L")
     width, height = image.size
     compose = transform(image_height=height, image_width=width)
     image = compose(image).unsqueeze(0).to(device)
@@ -20,6 +20,21 @@ def predict_image(image_path, model, device, character_set, character_length):
         output = model(image)[0]
         pred_str = decode_prediction(output, character_set, character_length)
     return pred_str
+
+
+def predict_image(image_path, model, device, character_set, character_length) -> str:
+    image = Image.open(image_path)
+    return _predict_from_image(image, model, device, character_set, character_length)
+
+
+def recognize(image: Image.Image) -> str:
+    device = load_device()
+    model = load_model(
+        CNNWithOneHot(IMAGE_WIDTH, IMAGE_HEIGHT, CHARACTER_LENGTH, len(CHARACTER_SET)),
+        LOAD_MODEL_PATH,
+        device
+    )
+    return _predict_from_image(image, model, device, CHARACTER_SET, CHARACTER_LENGTH)
 
 
 def main(args=None):

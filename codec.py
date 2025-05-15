@@ -22,7 +22,6 @@ def decode(vec, character_set):
     return "".join(text)
 
 
-
 def encode(text, character_set, character_length):
     all_char_set_len = len(character_set)
     vector = np.zeros(all_char_set_len * character_length, dtype=float)
