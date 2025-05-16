@@ -68,7 +68,7 @@ pip install -r requirements.txt
 ---
 
 ## 📂 Project Structure
-ocr-captcha/
+ocr-captcha/  
 ├── cli.py              # CLI entry point  
 ├── config.py           # Configuration loader  
 ├── config.yaml         # Default configuration file  
