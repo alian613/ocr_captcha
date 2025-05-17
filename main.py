@@ -25,7 +25,7 @@ def cli():
     help="🚀 Train the CAPTCHA model using given training and evaluation datasets.\n\n"
          "Options allow controlling training behavior such as cache usage, number of epochs, batch size, learning rate, etc."
 )
-@click.option('--cache/--no-cache', default=True, help="Cache dataset in memory (default: enabled). If --no-cache is used, the dataset will be stored on disk instead of in memory.")
+@click.option('--cache/--no-cache', default=False, help="Cache dataset in memory (default: disabled). If --no-cache is used, the dataset will be stored on disk instead of in memory.")
 @click.option('--load-only', is_flag=True, default=False, help="Only load existing dataset from disk without generating new samples")
 @click.option('--epochs', default=EPOCHS, show_default=True, type=int, help="Number of training epochs")
 @click.option('--batch-size', default=BATCH_SIZE, show_default=True, type=int, help="Batch size for training")
@@ -102,7 +102,7 @@ def predict(path, model_path, character_set, character_length, image_width, imag
     help="📊 Evaluate a trained model using a test dataset.\n\n"
          "Options allow adjusting batch size, image dimensions, and accuracy threshold, etc."
 )
-@click.option('--cache/--no-cache', default=True, help="Cache dataset in memory (default: enabled). If --no-cache is used, the dataset will be stored on disk instead of in memory.")
+@click.option('--cache/--no-cache', default=False, help="Cache dataset in memory (default: disabled). If --no-cache is used, the dataset will be stored on disk instead of in memory.")
 @click.option('--load-only', is_flag=True, default=False, help="Only load existing dataset from disk without generating new samples")
 @click.option('--dataset-size', default=DATESET_SIZE, show_default=True, type=int, help="Number of samples for evaluation")
 @click.option('--batch-size', default=BATCH_SIZE, show_default=True, type=int, help="Batch size for evaluation")
@@ -151,7 +151,22 @@ def evaluate(
 @click.option('--character-length', default=CHARACTER_LENGTH, show_default=True, type=int, help="Number of characters in each CAPTCHA")
 @click.option('--width', default=IMAGE_WIDTH, show_default=True, type=int, help="Width of the generated images")
 @click.option('--height', default=IMAGE_HEIGHT, show_default=True, type=int, help="Height of the generated images")
-def generate(count, save_path, character_set, character_length, width, height):
+@click.option('--custom/--no-custom', default=False, show_default=True, help="Enable or disable custom CAPTCHA rendering settings (default: disabled)")
+@click.option('--fonts', callback=lambda ctx, param, value: value.split() if value else [], help='Font file paths (randomly chosen per character in each image), separated by space. e.g.: --fonts ./fonts/1.ttf ./fonts/2.ttf')
+@click.option('--font-sizes', callback=lambda ctx, param, value: list(map(int, value.split())) if value else [], help='Font sizes (randomly chosen per character in each image), separated by space. e.g. --font-sizes 42, 50, 56')
+@click.option('--bg-color', type=(int, int, int), help="Background color in RGB, e.g., 255 255 0")
+@click.option('--fg-color', type=(int, int, int), help="Foreground (text) color in RGB, e.g., 255 0 0")
+@click.option('--character-offset-dx', type=(int, int), help="Character X offset range (e.g., 0 4)")
+@click.option('--character-offset-dy', type=(int, int), help="Character Y offset range (e.g., 0 6)")
+@click.option('--character-rotate', type=(int, int), help="Rotation angle range (e.g., -30 30)")
+@click.option('--character-warp-dx', type=(float, float), help="Horizontal warp range (e.g., 0.1 0.3)")
+@click.option('--character-warp-dy', type=(float, float), help="Vertical warp range (e.g., 0.2 0.3)")
+@click.option('--word-space-probability', type=float, help="Probability to add space between characters (e.g., 0.5)")
+@click.option('--word-offset-dx', type=float, help="Word horizontal offset factor (e.g., 0.25)")
+def generate(count, save_path, character_set, character_length, width, height,
+             custom, fonts, font_sizes, bg_color, fg_color,
+             character_offset_dx, character_offset_dy, character_rotate,
+             character_warp_dx, character_warp_dy, word_space_probability, word_offset_dx):
     """🧪 Generate CAPTCHA image(s)"""
     args = SimpleNamespace(
         count=count,
@@ -159,7 +174,19 @@ def generate(count, save_path, character_set, character_length, width, height):
         character_length=character_length,
         image_width=width,
         image_height=height,
-        pred_data_path=save_path
+        pred_data_path=save_path,
+        custom=custom,
+        fonts=fonts,
+        font_sizes=font_sizes,
+        bg_color=bg_color,
+        fg_color=fg_color,
+        character_offset_dx=character_offset_dx,
+        character_offset_dy=character_offset_dy,
+        character_rotate=character_rotate,
+        character_warp_dx=character_warp_dx,
+        character_warp_dy=character_warp_dy,
+        word_space_probability=word_space_probability,
+        word_offset_dx=word_offset_dx
     )
 
     generate_main(args)

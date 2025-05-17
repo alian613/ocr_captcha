@@ -1,25 +1,37 @@
 paths:
-  save_model: "./model/captcha_model.pth"
-  load_model: "./model/captcha_model.pth"
-  train_data: "./data/raw"
-  eval_data: "./data/eval"
-  pred_data: "./data/pred"
-  test_image: "./data/test/test.png"
+  save_model: "./model/captcha_model.pth"           # Path to save the trained model
+  load_model: "./model/captcha_model.pth"           # Path to load a pre-trained model (for evaluation or predict)
+  train_data: "./data/raw"                          # Directory containing training images
+  eval_data: "./data/eval"                          # Directory containing evaluation images
+  pred_data: "./data/pred"                          # Directory containing images for prediction (inference)
 
 image:
-  width: 160
-  height: 60
+  width: 160                                        # Width of the CAPTCHA image in pixels
+  height: 60                                        # Height of the CAPTCHA image in pixels
 
 characters:
-  length: 5
-  set: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  #set: '0123456789abcdefghijklmnopqrstuvwxyz'
+  length: 5                                         # Number of characters in each CAPTCHA (e.g., "A1B2C" is 5)
+  set: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'       # Set of characters used in CAPTCHA generation
+  # set: '0123456789abcdefghijklmnopqrstuvwxyz'     # Alternative character set (lowercase)
 
 training:
-  epochs: 30
-  batch_size: 128
-  learning_rate: 0.001
-  dataset_size: 100000
+  epochs: 30                                        # Total number of training epochs
+  batch_size: 128                                   # Number of samples per training batch
+  learning_rate: 0.001                              # Learning rate for the optimizer
+  dataset_size: 100000                              # Number of training samples per epoch (can limit for faster testing)
 
 evaluation:
-  acc_threshold: 75
+  acc_threshold: 75                                 # Minimum accuracy threshold during evaluation;
+                                                    # if the model performs worse, the current epoch will be skipped to save time
+
+captcha:                                            # CAPTCHA style configuration.
+  style:                                            # For details on each field, refer to: https://captcha.lepture.com/image/
+    bg_color: [255, 255, 0]
+    fg_color: [255, 0, 0]
+    character_offset_dx: [0, 4]
+    character_offset_dy: [0, 6]
+    character_rotate: [-30, 30]
+    character_warp_dx: [0.1, 0.3]
+    character_warp_dy: [0.2, 0.3]
+    word_space_probability: 0.5
+    word_offset_dx: 0.25

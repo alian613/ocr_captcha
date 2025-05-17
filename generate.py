@@ -4,16 +4,40 @@ from tqdm import tqdm
 
 from captcha.image import ImageCaptcha
 
-from config import CHARACTER_SET, CHARACTER_LENGTH, IMAGE_WIDTH, IMAGE_HEIGHT, PRED_DATA_PATH, DATESET_SIZE
+from config import (
+    CHARACTER_SET, CHARACTER_LENGTH,
+    IMAGE_WIDTH, IMAGE_HEIGHT, PRED_DATA_PATH, DATESET_SIZE
+)
 
 
 class CaptchaGenerator:
-    def __init__(self, character_set, character_length, width=160, height=60):
+    def __init__(self, character_set, character_length, width=160, height=60, captcha_kwargs=None):
         self.character_set = character_set
         self.character_length = character_length
         self.width = width
         self.height = height
-        self.image_captcha = ImageCaptcha(width=self.width, height=self.height)
+
+        captcha_kwargs = captcha_kwargs or {}
+        fonts = captcha_kwargs.get('fonts')
+        font_sizes = captcha_kwargs.get('font_sizes')
+        self.bg_color = captcha_kwargs.get('bg_color')
+        self.fg_color = captcha_kwargs.get('fg_color')
+
+        self.image_captcha = ImageCaptcha(
+            width=self.width,
+            height=self.height,
+            fonts=list(fonts) if fonts else None,
+            font_sizes=tuple(font_sizes) if font_sizes else None
+        )
+
+        for attr in [
+            'character_offset_dx', 'character_offset_dy',
+            'character_rotate', 'character_warp_dx', 'character_warp_dy',
+            'word_space_probability', 'word_offset_dx'
+        ]:
+            value = captcha_kwargs.get(attr)
+            if value is not None:
+                setattr(self.image_captcha, attr, value)
 
     def generate_text(self):
         """Generate a random CAPTCHA text"""
@@ -21,6 +45,9 @@ class CaptchaGenerator:
 
     def generate_image(self, text):
         """Generate a CAPTCHA image for the given text"""
+        if self.bg_color is not None and self.fg_color is not None:
+            return self.image_captcha.generate_image(text, self.bg_color, self.fg_color)
+
         return self.image_captcha.generate_image(text)
 
     def generate_image_and_text(self):
@@ -51,6 +78,33 @@ class CaptchaGenerator:
                 pbar.update(1)
 
 
+def load_captcha_style_config(args):
+    from config import (
+        BG_COLOR, FG_COLOR,
+        CHARACTER_OFFSET_DX, CHARACTER_OFFSET_DY,
+        CHARACTER_ROTATE,
+        CHARACTER_WARP_DX, CHARACTER_WARP_DY,
+        WORD_SPACE_PROBABILITY, WORD_OFFSET_DX
+    )
+
+    def get_or_none(name, default):
+        return getattr(args, name, default)
+
+    return {
+        'fonts': get_or_none('fonts', None),
+        'font_sizes': get_or_none('font_sizes', None),
+        'bg_color': get_or_none('bg_color', BG_COLOR),
+        'fg_color': get_or_none('fg_color', FG_COLOR),
+        'character_offset_dx': get_or_none('character_offset_dx', CHARACTER_OFFSET_DX),
+        'character_offset_dy': get_or_none('character_offset_dy', CHARACTER_OFFSET_DY),
+        'character_rotate': get_or_none('character_rotate', CHARACTER_ROTATE),
+        'character_warp_dx': get_or_none('character_warp_dx', CHARACTER_WARP_DX),
+        'character_warp_dy': get_or_none('character_warp_dy', CHARACTER_WARP_DY),
+        'word_space_probability': get_or_none('word_space_probability', WORD_SPACE_PROBABILITY),
+        'word_offset_dx': get_or_none('word_offset_dx', WORD_OFFSET_DX),
+    }
+
+
 def main(args=None):
     args = args or {}
 
@@ -61,11 +115,15 @@ def main(args=None):
     image_height = getattr(args, 'height', IMAGE_HEIGHT)
     pred_data_path = getattr(args, 'save_path', PRED_DATA_PATH)
 
+    custom_captcha = getattr(args, 'custom', False)
+    captcha_style_config = load_captcha_style_config(args) if custom_captcha else {}
+
     generator = CaptchaGenerator(
         character_set=character_set,
         character_length=character_length,
         width=image_width,
-        height=image_height
+        height=image_height,
+        captcha_kwargs=captcha_style_config
     )
 
     if count == 1:

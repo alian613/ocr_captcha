@@ -51,4 +51,15 @@ DATESET_SIZE = config['training']['dataset_size']
 # Evaluation settings
 EVAL_ACC_THRESHOLD = config['evaluation']['acc_threshold']
 
+# Captcha style
+BG_COLOR = config['captcha']['style']['bg_color']
+FG_COLOR = config['captcha']['style']['fg_color']
+CHARACTER_OFFSET_DX = config['captcha']['style']['character_offset_dx']
+CHARACTER_OFFSET_DY = config['captcha']['style']['character_offset_dy']
+CHARACTER_ROTATE = config['captcha']['style']['character_rotate']
+CHARACTER_WARP_DX = config['captcha']['style']['character_warp_dx']
+CHARACTER_WARP_DY = config['captcha']['style']['character_warp_dy']
+WORD_SPACE_PROBABILITY = config['captcha']['style']['word_space_probability']
+WORD_OFFSET_DX = config['captcha']['style']['word_offset_dx']
+
 
